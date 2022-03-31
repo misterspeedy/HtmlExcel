@@ -2,6 +2,12 @@ namespace Shared
 
 open System
 
+type NamedWorkBook =
+    {
+        Name : string
+        Bytes : byte[]
+    }
+
 type Todo = { Id: Guid; Description: string }
 
 module Model =
@@ -13,4 +19,4 @@ module Route =
         sprintf "/api/%s/%s" typeName methodName
 
 type IApi =
-    { getTables: string -> Async<Result<byte[], string>> }
+    { getTables: string -> Async<Result<NamedWorkBook, string>> }

@@ -9,7 +9,7 @@ type Model = { Url: string }
 type Msg =
     | SetUrl of string
     | GetTables
-    | GotTables of Result<byte[], string>
+    | GotTables of Result<NamedWorkBook, string>
 
 let api =
     Remoting.createApi ()
@@ -32,7 +32,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         model, cmd
     | GotTables result ->
         match result with
-        | Ok bytes -> bytes.SaveFileAs("Tables.xlsx")
+        | Ok {Name = name; Bytes = bytes} -> bytes.SaveFileAs(name)
         | Error e -> () // TODO
         model, Cmd.none
 
