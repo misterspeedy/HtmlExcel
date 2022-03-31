@@ -15,17 +15,20 @@ module Integer =
         | true, i -> Some i
         | false, _ -> None
 
+module Filename =
+
+    let fromHtmlDoc (htmlDoc :HtmlDocument) =
+        // Browser will automatically strip out illegal characters etc.
+        htmlDoc.Descendants ["title"]
+        |> Seq.tryHead
+        |> Option.map (fun h -> h.InnerText())
+        |> Option.defaultValue "Table"
+        |> fun s -> $"{s}.xlsx"
+
 let doGetTables (url : string) =
     async {
         try
             let! htmlDoc = HtmlDocument.AsyncLoad url
-
-            let fileName =
-                htmlDoc.Descendants ["title"]
-                |> Seq.tryHead
-                |> Option.map (fun h -> h.InnerText())
-                |> Option.defaultValue "Table"
-                |> fun s -> $"{s}.xlsx"
 
             let cells =
                 [
@@ -51,7 +54,11 @@ let doGetTables (url : string) =
                                 Go NewRow
                             AutoFit All
                 ]
-            return Ok ({Name = fileName; Bytes = cells |> Render.AsStreamBytes})
+            return Ok (
+                {
+                    Name = htmlDoc |> Filename.fromHtmlDoc
+                    Bytes = cells |> Render.AsStreamBytes
+                })
         with
         | e ->
             return Error e.Message
