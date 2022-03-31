@@ -4,3 +4,8 @@ A simple SAFE app which takes the URL of a web page that contains HTML tables, a
 a downloadable Excel spreadsheet of the tables.
 
 Intended mainly as a demo of FsExcel.
+
+## TODO
+
+- Handle errors
+- Handle rowspan and colspan
