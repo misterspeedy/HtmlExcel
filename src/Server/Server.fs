@@ -56,34 +56,33 @@ let doGetTables (url : string) =
             let cells =
                 [
                     let tables = htmlDoc.Descendants ["table"]
-                    for tableIndex, table in tables |> Seq.indexed do
+                    for table in tables do
+                        let mutable tableIndex = 1
                         let allRows =
                             table.Descendants ["tr"]
                         if allRows |> Seq.length > 1 then
                             Worksheet $"Table{tableIndex}"
-
-                            // let colCount =
-                            //     allRows
-                            //     |> Seq.map (fun row -> row.Descendants ["th"; "td"])
-                            //     |> Seq.map (Seq.sumBy (Attribute.getAsIntOr 1 "colspan"))
-                            //     |> Seq.max
+                            tableIndex <- tableIndex + 1
 
                             let boolMap = BoolMap()
 
                             for rowIndex, row in allRows |> Seq.indexed do
 
                                 let thds = row.Descendants ["th"; "td"] |> Array.ofSeq
-                                let thdCount = thds.Length
 
-                                for thi, thd in thds |> Seq.indexed do
+                                // Set up a map of cells where there is no corresponding th/td
+                                // element because there is a th/td with a colSpan > 1 above.
+                                let mutable colIndex = 0
+                                for thd in thds do
                                     let rowSpan = thd |> Attribute.getAsIntOr 1 "rowspan"
                                     for offset in 1..rowSpan-1 do
-                                        boolMap.[rowIndex+offset, thi] <- true
+                                        boolMap.[rowIndex+offset, colIndex] <- true
+                                    colIndex <- colIndex + (thd |> Attribute.getAsIntOr 1 "colspan")
 
                                 let mutable thdIndex = 0
                                 let mutable colIndex = 0
 
-                                while thdIndex < thdCount do
+                                while thdIndex < thds.Length do
                                     if boolMap.[rowIndex, colIndex] then
                                         // This cell has a th/td with rowSpan > 1 above it:
                                         Cell []
