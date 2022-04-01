@@ -83,30 +83,21 @@ let containerBox (model: Model) (dispatch: Msg -> unit) =
 let view (model: Model) (dispatch: Msg -> unit) =
     Bulma.hero [
         hero.isFullHeight
-        color.isPrimary
-        prop.style [
-            style.backgroundSize "cover"
-            style.backgroundImageUrl "https://unsplash.it/1200/900?random"
-            style.backgroundPosition "no-repeat center center fixed"
-        ]
+        color.isWhite
         prop.children [
-            Bulma.heroHead [
-                Bulma.navbar [
-                    Bulma.container [ navBrand ]
+            Bulma.column [
+                column.is10
+                column.isOffset1
+                prop.children [
+                    containerBox model dispatch
                 ]
             ]
-            Bulma.heroBody [
-                Bulma.container [
-                    Bulma.column [
-                        column.is10
-                        column.isOffset1
-                        prop.children [
-                            Bulma.title [
-                                text.hasTextCentered
-                                prop.text "HtmlExcel"
-                            ]
-                            containerBox model dispatch
-                        ]
+            Bulma.container [
+                Bulma.column [
+                    column.is8
+                    column.isOffset2
+                    prop.children [
+                        Html.img [ prop.src "/push-button-receive-table.png" ]
                     ]
                 ]
             ]
