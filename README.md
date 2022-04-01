@@ -13,7 +13,7 @@ Intended mainly as a demo of FsExcel.
 ## Test Cases
 
 https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_th_rowspan_0 (failing - alignment)
-https://en.wikipedia.org/wiki/List_of_exceptional_asteroids (failing - only picks up one table)
+https://en.wikipedia.org/wiki/List_of_exceptional_asteroids
 https://www.rapidtables.com/code/text/ascii-table.html
 https://en.wikipedia.org/wiki/List_of_rivers_by_length
 https://en.wikipedia.org/wiki/List_of_tallest_trees

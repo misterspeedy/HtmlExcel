@@ -56,8 +56,8 @@ let doGetTables (url : string) =
             let cells =
                 [
                     let tables = htmlDoc.Descendants ["table"]
+                    let mutable tableIndex = 1
                     for table in tables do
-                        let mutable tableIndex = 1
                         let allRows =
                             table.Descendants ["tr"]
                         if allRows |> Seq.length > 1 then
