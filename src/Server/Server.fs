@@ -58,13 +58,18 @@ let doGetTables (url : string) =
                     let tables = htmlDoc.Descendants ["table"]
                     let mutable tableIndex = 1
                     for table in tables do
+                        // TODO render <thead>s and <tbody> separately.
+                        // Doing this will ensure that rowspans end correctly, e.g. https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_th_rowspan_0
                         let allRows =
                             table.Descendants ["tr"]
                         if allRows |> Seq.length > 1 then
+                            // TODO use <caption> to name (ensuring unique)
                             Worksheet $"Table{tableIndex}"
                             tableIndex <- tableIndex + 1
 
                             let boolMap = BoolMap()
+
+                            let rowCount = allRows |> Seq.length
 
                             for rowIndex, row in allRows |> Seq.indexed do
 
@@ -74,7 +79,15 @@ let doGetTables (url : string) =
                                 // element because there is a th/td with a colSpan > 1 above.
                                 let mutable colIndex = 0
                                 for thd in thds do
-                                    let rowSpan = thd |> Attribute.getAsIntOr 1 "rowspan"
+
+                                    let rowSpan =
+                                        thd
+                                        |> Attribute.getAsIntOr 1 "rowspan"
+                                        |> fun cs ->
+                                            if cs > 0 then cs
+                                            // A rowSpan of 0 means span everything down to the bottom:
+                                            else rowCount - rowIndex
+
                                     for offset in 1..rowSpan-1 do
                                         boolMap.[rowIndex+offset, colIndex] <- true
                                     colIndex <- colIndex + (thd |> Attribute.getAsIntOr 1 "colspan")
@@ -90,6 +103,7 @@ let doGetTables (url : string) =
                                     else
                                         let thd = thds.[thdIndex]
                                         let colSpan = thd |> Attribute.getAsIntOr 1 "colspan"
+
                                         Cell [
                                             String (thd.InnerText())
                                             if thd.Name() = "th" then FontEmphasis Bold
