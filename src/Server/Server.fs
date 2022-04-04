@@ -52,6 +52,7 @@ let doGetTables (url : string) =
     async {
         try
             let! htmlDoc = HtmlDocument.AsyncLoad url
+            let mutable tablesFound = false
 
             let cells =
                 [
@@ -64,6 +65,7 @@ let doGetTables (url : string) =
                             table.Descendants ["tr"]
                         if allRows |> Seq.length > 1 then
                             // TODO use <caption> to name (ensuring unique)
+                            tablesFound <- true
                             Worksheet $"Table{tableIndex}"
                             tableIndex <- tableIndex + 1
 
@@ -115,11 +117,14 @@ let doGetTables (url : string) =
 
                             AutoFit All
                 ]
-            return Ok (
-                {
-                    Name = htmlDoc |> Filename.fromHtmlDoc
-                    Bytes = cells |> Render.AsStreamBytes
-                })
+            if tablesFound then
+                return Ok (
+                    {
+                        Name = htmlDoc |> Filename.fromHtmlDoc
+                        Bytes = cells |> Render.AsStreamBytes
+                    })
+            else
+                return Error ("Sorry, that web page doesn't seem to contain any HTML tables.")
         with
         | e ->
             return Error e.Message

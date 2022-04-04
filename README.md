@@ -8,7 +8,6 @@ Intended mainly as a demo of FsExcel.
 ## TODO
 
 - Handle errors
-- Handle rowspan and colspan
 
 ## Test Cases
 

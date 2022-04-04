@@ -4,7 +4,16 @@ open Elmish
 open Fable.Remoting.Client
 open Shared
 
-type Model = { Url: string }
+type Status =
+    | Initial
+    | Done
+    | Error of string
+
+type Model =
+    {
+        Url: string
+        Status : Status
+    }
 
 type Msg =
     | SetUrl of string
@@ -17,7 +26,11 @@ let api =
     |> Remoting.buildProxy<IApi>
 
 let init () : Model * Cmd<Msg> =
-    let model = { Url = "https://www.w3schools.com/html/html_tables.asp" }
+    let model =
+        {
+            Url = "https://www.w3schools.com/html/html_tables.asp"
+            Status = Initial
+        }
 
     let cmd = Cmd.none
 
@@ -26,15 +39,17 @@ let init () : Model * Cmd<Msg> =
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     match msg with
     | SetUrl value ->
-        { model with Url = value }, Cmd.none
+        { model with Url = value; Status = Initial }, Cmd.none
     | GetTables ->
         let cmd = Cmd.OfAsync.perform api.getTables model.Url GotTables
         model, cmd
     | GotTables result ->
         match result with
-        | Ok {Name = name; Bytes = bytes} -> bytes.SaveFileAs(name)
-        | Error e -> () // TODO
-        model, Cmd.none
+        | Result.Ok {Name = name; Bytes = bytes} ->
+            bytes.SaveFileAs(name)
+            { model with Status = Done }, Cmd.none
+        | Result.Error m ->
+            { model with Status = Error m }, Cmd.none
 
 open Feliz
 open Feliz.Bulma
@@ -52,6 +67,15 @@ let navBrand =
             ]
         ]
     ]
+
+let messagePanel color (heading : string) (message : string)  =
+    Bulma.message [
+        color
+        prop.children [
+            Bulma.messageHeader [ prop.text heading ]
+            Bulma.messageBody [ message |> prop.text ]
+        ]
+     ]
 
 let containerBox (model: Model) (dispatch: Msg -> unit) =
     Bulma.box [
@@ -97,6 +121,10 @@ let view (model: Model) (dispatch: Msg -> unit) =
                     column.is8
                     column.isOffset2
                     prop.children [
+                        match model.Status with
+                        | Initial -> ()
+                        | Done -> messagePanel color.isSuccess "Thanks!" "Extracted tables - see your browser downloads."
+                        | Error e -> messagePanel color.isDanger "Oopsie!" e
                         Html.img [ prop.src "/push-button-receive-table.png" ]
                     ]
                 ]
