@@ -1,5 +1,6 @@
 module Server
 
+open System
 open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
 open Saturn
@@ -48,10 +49,16 @@ type BoolMap() =
         and set (x, y) value =
             d.[(x, y)] <- value
 
+let forceSchema (url : string) =
+    let uriBuilder = new UriBuilder(url)
+    uriBuilder.Scheme <- "https"
+    uriBuilder.Port <- -1
+    uriBuilder.ToString()
+
 let doGetTables (url : string) =
     async {
         try
-            let! htmlDoc = HtmlDocument.AsyncLoad url
+            let! htmlDoc = HtmlDocument.AsyncLoad (url |> forceSchema)
             let mutable tablesFound = false
 
             let cells =

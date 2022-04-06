@@ -94,7 +94,7 @@ let containerBox (model: Model) (dispatch: Msg -> unit) =
                 ]
                 Bulma.control.p [
                     Bulma.button.a [
-                        color.isPrimary
+                        color.isDark
                         prop.disabled (Model.isValid model.Url |> not)
                         prop.onClick (fun _ -> dispatch GetTables)
                         prop.text "Download"
@@ -109,6 +109,12 @@ let view (model: Model) (dispatch: Msg -> unit) =
         hero.isFullHeight
         color.isWhite
         prop.children [
+            Bulma.section [
+                Bulma.section.isMedium
+                Bulma.text.hasTextCentered
+                Bulma.text.hasTextWeightBold
+                prop.text "Get the tables from a web page as an Excel spreadsheet"
+            ]
             Bulma.column [
                 column.is10
                 column.isOffset1

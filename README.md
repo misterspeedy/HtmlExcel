@@ -7,7 +7,11 @@ Intended mainly as a demo of FsExcel.
 
 ## TODO
 
-- Handle errors
+- Add instructions
+- Fix up logo
+- Set icon
+- Set tab label
+- Add technology links
 
 ## Test Cases
 
