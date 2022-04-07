@@ -88,7 +88,8 @@ let containerBox (model: Model) (dispatch: Msg -> unit) =
                         Bulma.input.text [
                             prop.value model.Url
                             prop.placeholder "E.g. https://en.wikipedia.org/wiki/Asteroid"
-                            prop.onChange (fun x -> SetUrl x |> dispatch)
+                            prop.onChange (SetUrl >> dispatch)
+                            prop.onKeyPress (fun kp -> if kp.key = "Enter" then GetTables |> dispatch)
                         ]
                     ]
                 ]
