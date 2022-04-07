@@ -78,7 +78,7 @@ let doGetTables (url : string) =
             if url |> Url.isAvailable then
 
                 let! htmlDoc = HtmlDocument.AsyncLoad (url |> Url.forceSchema)
-                let mutable tablesFound = false
+                let mutable tableCount = 0
 
                 let cells =
                     [
@@ -91,7 +91,7 @@ let doGetTables (url : string) =
                                 table.Descendants ["tr"]
                             if allRows |> Seq.length > 1 then
                                 // TODO use <caption> to name (ensuring unique)
-                                tablesFound <- true
+                                tableCount <- tableCount + 1
                                 Worksheet $"Table{tableIndex}"
                                 tableIndex <- tableIndex + 1
 
@@ -143,10 +143,11 @@ let doGetTables (url : string) =
 
                                 AutoFit All
                     ]
-                if tablesFound then
+                if tableCount > 0 then
                     return Ok (
                         {
                             Name = htmlDoc |> Filename.fromHtmlDoc
+                            TableCount = tableCount
                             Bytes = cells |> Render.AsStreamBytes
                         })
                 else

@@ -6,7 +6,7 @@ open Shared
 
 type Status =
     | Initial
-    | Done
+    | Done of tableCount:int
     | Error of string
 
 type Model =
@@ -45,9 +45,9 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         model, cmd
     | GotTables result ->
         match result with
-        | Result.Ok {Name = name; Bytes = bytes} ->
+        | Result.Ok {Name = name; TableCount = tableCount; Bytes = bytes} ->
             bytes.SaveFileAs(name)
-            { model with Status = Done }, Cmd.none
+            { model with Status = Done tableCount }, Cmd.none
         | Result.Error m ->
             { model with Status = Error m }, Cmd.none
 
@@ -122,6 +122,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                             Html.li [ prop.text "Enter the url of a website that has html tables" ]
                             Html.li [ prop.text "Click \"Download\"" ]
                             Html.li [ prop.text "Check your browser downloads"]
+                            Html.li [ prop.text "Each table is in a tab in the spreadsheet"]
                         ]
                     ]
                 ]
@@ -140,7 +141,9 @@ let view (model: Model) (dispatch: Msg -> unit) =
                     prop.children [
                         match model.Status with
                         | Initial -> ()
-                        | Done -> messagePanel color.isSuccess "Yay!" "Extracted tables - see your browser downloads."
+                        | Done tc ->
+                            let noun = if tc = 1 then "table" else "tables"
+                            messagePanel color.isSuccess "Yay!" $"Extracted {tc} {noun} - see your browser downloads."
                         | Error e -> messagePanel color.isDanger "Oopsie!" e
                         Html.img [ prop.src "/push-button-receive-table.png" ]
                     ]

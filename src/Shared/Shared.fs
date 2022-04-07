@@ -5,6 +5,7 @@ open System
 type NamedWorkBook =
     {
         Name : string
+        TableCount : int
         Bytes : byte[]
     }
 
