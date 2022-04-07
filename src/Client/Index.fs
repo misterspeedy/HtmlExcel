@@ -109,11 +109,22 @@ let view (model: Model) (dispatch: Msg -> unit) =
         hero.isFullHeight
         color.isWhite
         prop.children [
-            Bulma.section [
-                Bulma.section.isMedium
-                Bulma.text.hasTextCentered
-                Bulma.text.hasTextWeightBold
-                prop.text "Get the tables from a web page as an Excel spreadsheet"
+            Bulma.column [
+                column.is10
+                column.isOffset1
+                // Bulma.text.hasTextCentered
+                // Bulma.text.hasTextWeightBold
+                prop.children [
+                    Bulma.content [
+                        Bulma.text.hasTextLeft
+                        prop.children [
+                            Html.h1 [ prop.text "Get the tables from a web page as an Excel spreadsheet" ]
+                            Html.li [ prop.text "Enter the url of a website that has html tables" ]
+                            Html.li [ prop.text "Click \"Download\"" ]
+                            Html.li [ prop.text "Check your browser downloads"]
+                        ]
+                    ]
+                ]
             ]
             Bulma.column [
                 column.is10
@@ -129,7 +140,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                     prop.children [
                         match model.Status with
                         | Initial -> ()
-                        | Done -> messagePanel color.isSuccess "Thanks!" "Extracted tables - see your browser downloads."
+                        | Done -> messagePanel color.isSuccess "Yay!" "Extracted tables - see your browser downloads."
                         | Error e -> messagePanel color.isDanger "Oopsie!" e
                         Html.img [ prop.src "/push-button-receive-table.png" ]
                     ]
