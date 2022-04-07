@@ -6,6 +6,7 @@ open Shared
 
 type Status =
     | Initial
+    | Getting
     | Done of tableCount:int
     | Error of string
 
@@ -42,7 +43,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         { model with Url = value; Status = Initial }, Cmd.none
     | GetTables ->
         let cmd = Cmd.OfAsync.perform api.getTables model.Url GotTables
-        model, cmd
+        { model with Status = Getting }, cmd
     | GotTables result ->
         match result with
         | Result.Ok {Name = name; TableCount = tableCount; Bytes = bytes} ->
@@ -96,6 +97,7 @@ let containerBox (model: Model) (dispatch: Msg -> unit) =
                 Bulma.control.p [
                     Bulma.button.a [
                         color.isDark
+                        if model.Status = Getting then Bulma.button.isLoading
                         prop.disabled (Model.isValid model.Url |> not)
                         prop.onClick (fun _ -> dispatch GetTables)
                         prop.text "Download"
@@ -141,11 +143,14 @@ let view (model: Model) (dispatch: Msg -> unit) =
                     column.isOffset2
                     prop.children [
                         match model.Status with
-                        | Initial -> ()
+                        | Initial
+                        | Getting ->
+                            ()
                         | Done tc ->
                             let noun = if tc = 1 then "table" else "tables"
                             messagePanel color.isSuccess "Yay!" $"Extracted {tc} {noun} - see your browser downloads."
-                        | Error e -> messagePanel color.isDanger "Oopsie!" e
+                        | Error e ->
+                            messagePanel color.isDanger "Oopsie!" e
                         Html.img [ prop.src "/push-button-receive-table.png" ]
                     ]
                 ]
