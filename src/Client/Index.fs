@@ -120,12 +120,34 @@ let view (model: Model) (dispatch: Msg -> unit) =
                 prop.children [
                     Bulma.content [
                         Bulma.text.hasTextLeft
+                        let bullet =
+                            Html.span [
+                                prop.style [
+                                    style.fontSize 25
+                                    style.paddingLeft 16
+                                    style.paddingRight 8
+                                    style.color "Green"
+                                ]
+                                prop.text "✔"
+                            ]
                         prop.children [
                             Html.h1 [ prop.text "Get the tables from a web page as an Excel spreadsheet" ]
-                            Html.li [ prop.text "Enter the url of a website that has html tables" ]
-                            Html.li [ prop.text "Click \"Download\"" ]
-                            Html.li [ prop.text "Check your browser downloads"]
-                            Html.li [ prop.text "Each table is in a tab in the spreadsheet"]
+                            Html.p [
+                                bullet
+                                Html.span [ prop.text "Enter the URL of a website that has HTML tables." ]
+                            ]
+                            Html.p [
+                                bullet
+                                Html.span [ prop.text "Click \"Download\"." ]
+                            ]
+                            Html.p [
+                                bullet
+                                Html.span [ prop.text "Check your browser downloads."]
+                            ]
+                            Html.p [
+                                bullet
+                                Html.span [ prop.text "Each table is in a tab in the spreadsheet."]
+                            ]
                         ]
                     ]
                 ]
