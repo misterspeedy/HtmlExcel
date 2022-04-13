@@ -34,9 +34,19 @@ module Html
                                     let allRows =
                                         table.Descendants ["tr"]
                                     if allRows |> Seq.length > 1 then
-                                        // TODO use <caption> to name (ensuring unique)
                                         tableCount <- tableCount + 1
-                                        Worksheet $"Table{tableIndex}"
+
+                                        let tabName =
+                                            table.Descendants ["caption"]
+                                            |> Seq.tryHead
+                                            |> Option.map (fun c -> c.InnerText())
+                                            |> Option.bind Worksheet.trySafeName
+                                            |> Option.defaultWith (fun _ ->
+                                                $"Table{tableIndex}")
+                                        // TODO make sure name is unique
+
+                                        Worksheet tabName
+
                                         tableIndex <- tableIndex + 1
 
                                         let boolMap = Dictionary2d.Bool()
