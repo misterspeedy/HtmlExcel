@@ -6,6 +6,12 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="paket.references" />
+    <Compile Include="Seq.fs" />
+    <Compile Include="Integer.fs" />
+    <Compile Include="Url.fs" />
+    <Compile Include="Filename.fs" />
+    <Compile Include="BoolMap.fs" />
+    <Compile Include="Html.fs" />
     <Compile Include="Server.fs" />
   </ItemGroup>
   <ItemGroup>
