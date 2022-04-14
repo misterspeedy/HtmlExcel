@@ -17,6 +17,8 @@ module Html
             async {
                 try
 
+                    let safeNameGenerator = Worksheet.SafeNameGenerator()
+
                     let url = url |> Url.forceSchema
 
                     if url |> Url.isAvailable then
@@ -40,9 +42,8 @@ module Html
                                             table.Descendants ["caption"]
                                             |> Seq.tryHead
                                             |> Option.map (fun c -> c.InnerText())
-                                            |> Option.bind Worksheet.trySafeName
-                                            |> Option.defaultWith (fun _ ->
-                                                $"Table{tableIndex}")
+                                            |> Option.defaultValue ""
+                                            |> fun s -> safeNameGenerator.Make(s, tableIndex)
                                         // TODO make sure name is unique
 
                                         Worksheet tabName
