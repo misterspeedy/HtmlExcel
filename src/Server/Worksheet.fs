@@ -7,11 +7,17 @@ let maxLen = 31
 let illegal = ['\\'; '/'; '*'; '?'; ':'; '['; ']'] |> Set.ofList
 
 let private makeUnique (history : string seq) (s : string) =
-    let mutable suffix = 1
+    let mutable suffixCounter = 1
     let mutable candidate = s
     while history |> Seq.contains candidate do
-        candidate <- $"{s}_{suffix}"
-        suffix <- suffix + 1
+        let suffix = $"_{suffixCounter}"
+        let root =
+            s
+            |> Seq.truncate (maxLen - suffix.Length)
+            |> Array.ofSeq
+            |> fun cs -> new String(cs)
+        candidate <- root + suffix
+        suffixCounter <- suffixCounter + 1
     candidate
 
 type SafeNameGenerator() =
@@ -22,7 +28,7 @@ type SafeNameGenerator() =
         let result =
             s
             |> Seq.filter (fun c -> illegal |> Set.contains c |> not)
-            |> Seq.truncate 31
+            |> Seq.truncate maxLen
             |> Array.ofSeq
             |> fun cs ->
                 new String(cs)
