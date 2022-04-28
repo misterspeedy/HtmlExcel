@@ -44,13 +44,12 @@ module Html
                                             |> Option.map (fun c -> c.InnerText())
                                             |> Option.defaultValue ""
                                             |> fun s -> safeNameGenerator.Make(s, tableIndex)
-                                        // TODO make sure name is unique
 
                                         Worksheet tabName
 
                                         tableIndex <- tableIndex + 1
 
-                                        let boolMap = Dictionary2d.Bool()
+                                        let rowSpanMap = Dictionary2d.Bool()
 
                                         let rowCount = allRows |> Seq.length
 
@@ -59,7 +58,7 @@ module Html
                                             let thds = row.Descendants ["th"; "td"] |> Array.ofSeq
 
                                             // Set up a map of cells where there is no corresponding th/td
-                                            // element because there is a th/td with a colSpan > 1 above.
+                                            // element because there is a th/td with a rowSpan > 1 above.
                                             let mutable colIndex = 0
                                             for thd in thds do
 
@@ -72,14 +71,14 @@ module Html
                                                         else rowCount - rowIndex
 
                                                 for offset in 1..rowSpan-1 do
-                                                    boolMap.[rowIndex+offset, colIndex] <- true
+                                                    rowSpanMap.[rowIndex+offset, colIndex] <- true
                                                 colIndex <- colIndex + (thd |> Attribute.getAsIntOr 1 "colspan")
 
                                             let mutable thdIndex = 0
                                             let mutable colIndex = 0
 
                                             while thdIndex < thds.Length do
-                                                if boolMap.[rowIndex, colIndex] then
+                                                if rowSpanMap.[rowIndex, colIndex] then
                                                     // This cell has a th/td with rowSpan > 1 above it:
                                                     Cell []
                                                     colIndex <- colIndex + 1

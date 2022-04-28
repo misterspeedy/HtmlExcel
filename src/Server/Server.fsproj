@@ -10,7 +10,7 @@
     <Compile Include="Integer.fs" />
     <Compile Include="Url.fs" />
     <Compile Include="Filename.fs" />
-    <Compile Include="BoolMap.fs" />
+    <Compile Include="Dictionary2d.fs" />
     <Compile Include="Worksheet.fs" />
     <Compile Include="Html.fs" />
     <Compile Include="Server.fs" />
