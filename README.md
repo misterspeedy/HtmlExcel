@@ -3,7 +3,7 @@
 A simple SAFE app which takes the URL of a web page that contains HTML tables, and delivers
 a downloadable Excel spreadsheet of the tables.
 
-Intended mainly as a demo of FsExcel.
+Intended mainly as a demo of [FsExcel](https://github.com/misterspeedy/FsExcel).
 
 Runs live at http://www.pushbuttonreceivetables.com
 
